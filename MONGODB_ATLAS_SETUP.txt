@@ -1,0 +1,17 @@
+# MongoDB Atlas Setup Instructions
+# This file contains steps to set up MongoDB Atlas (cloud-based MongoDB)
+
+Write-Host "🌐 MongoDB Atlas Setup Guide" -ForegroundColor Green
+Write-Host "========================================" -ForegroundColor Green
+
+Write-Host "`n1️⃣  Go to: https://www.mongodb.com/cloud/atlas" -ForegroundColor Cyan
+Write-Host "2️⃣  Create a free account" -ForegroundColor Cyan
+Write-Host "3️⃣  Create a new project and cluster" -ForegroundColor Cyan
+Write-Host "4️⃣  Get your connection string" -ForegroundColor Cyan
+Write-Host "5️⃣  Update your .env file with the connection string" -ForegroundColor Cyan
+
+Write-Host "`n📝 Your .env should look like:" -ForegroundColor Yellow
+Write-Host "MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/dbname" -ForegroundColor Gray
+Write-Host "PORT=5000" -ForegroundColor Gray
+
+Write-Host "`n✅ Once configured, run: npm start" -ForegroundColor Green
