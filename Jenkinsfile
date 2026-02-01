@@ -60,10 +60,10 @@ pipeline {
                         keyFileVariable: 'EC2_KEY',
                         usernameVariable: 'EC2_USER'
                     ),
-                    aws(
+                    usernamePassword(
                         credentialsId: 'aws-credentials',
-                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                        usernameVariable: 'AWS_ACCESS_KEY_ID',
+                        passwordVariable: 'AWS_SECRET_ACCESS_KEY'
                     )
                 ]) {
                     sh '''
