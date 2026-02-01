@@ -10,17 +10,24 @@ if [ -z "$DOCKER_USER" ] || [ -z "$DOCKER_PASS" ]; then
   exit 1
 fi
 
+# Check if user is in docker group, if not use sudo
+if ! docker ps &> /dev/null; then
+  DOCKER_CMD="sudo docker"
+else
+  DOCKER_CMD="docker"
+fi
+
 echo "🔑 Logging in to Docker Hub..."
-echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+echo "$DOCKER_PASS" | $DOCKER_CMD login -u "$DOCKER_USER" --password-stdin
 
 echo "📤 Pushing Docker images to Docker Hub..."
 
 # Push backend image
 echo "Pushing backend image..."
-docker push lashan123/royal-stay-backend:latest
+$DOCKER_CMD push lashan123/royal-stay-backend:latest
 
 # Push frontend image
 echo "Pushing frontend image..."
-docker push lashan123/royal-stay-frontend:latest
+$DOCKER_CMD push lashan123/royal-stay-frontend:latest
 
 echo "✅ Docker images pushed successfully!"
