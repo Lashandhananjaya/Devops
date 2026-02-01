@@ -54,35 +54,37 @@ pipeline {
             }
 
             steps {
-                withCredentials([
-                    sshUserPrivateKey(
-                        credentialsId: 'ec2-ssh-key',
-                        keyFileVariable: 'EC2_KEY',
-                        usernameVariable: 'EC2_USER'
-                    ),
-                    usernamePassword(
-                        credentialsId: 'aws-credentials',
-                        usernameVariable: 'AWS_ACCESS_KEY_ID',
-                        passwordVariable: 'AWS_SECRET_ACCESS_KEY'
-                    )
-                ]) {
-                    sh '''
-                        set -e
+                script {
+                    try {
+                        withCredentials([
+                            sshUserPrivateKey(
+                                credentialsId: 'ec2-ssh-key',
+                                keyFileVariable: 'EC2_KEY',
+                                usernameVariable: 'EC2_USER'
+                            ),
+                            usernamePassword(
+                                credentialsId: 'aws-credentials',
+                                usernameVariable: 'AWS_ACCESS_KEY_ID',
+                                passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                            )
+                        ]) {
+                            sh '''
+                                set -e
 
-                        # If the public key parameter isn't provided, derive it from the same private key used for SSH deploy.
-                        if [ -z "${SSH_PUBLIC_KEY}" ]; then
-                            if command -v ssh-keygen >/dev/null 2>&1; then
-                                SSH_PUBLIC_KEY="$(ssh-keygen -y -f "$EC2_KEY" 2>/dev/null || true)"
-                            fi
-                        fi
+                                # If the public key parameter isn't provided, derive it from the same private key used for SSH deploy.
+                                if [ -z "${SSH_PUBLIC_KEY}" ]; then
+                                    if command -v ssh-keygen >/dev/null 2>&1; then
+                                        SSH_PUBLIC_KEY="$(ssh-keygen -y -f "$EC2_KEY" 2>/dev/null || true)"
+                                    fi
+                                fi
 
-                        if [ -z "${SSH_PUBLIC_KEY}" ]; then
-                            echo "ERROR: SSH_PUBLIC_KEY is empty and could not be derived (is the private key passphrase-protected, or is ssh-keygen missing?)."
-                            echo "Provide SSH_PUBLIC_KEY in the Jenkins job parameters (public key only)."
-                            exit 1
-                        fi
+                                if [ -z "${SSH_PUBLIC_KEY}" ]; then
+                                    echo "ERROR: SSH_PUBLIC_KEY is empty and could not be derived (is the private key passphrase-protected, or is ssh-keygen missing?)."
+                                    echo "Provide SSH_PUBLIC_KEY in the Jenkins job parameters (public key only)."
+                                    exit 1
+                                fi
 
-                        cat > terraform/terraform.tfvars <<EOF
+                                cat > terraform/terraform.tfvars <<EOF
 aws_region       = "${AWS_REGION}"
 key_pair_name    = "${KEY_PAIR_NAME}"
 ssh_public_key   = <<EOT
@@ -93,38 +95,55 @@ allowed_ssh_cidr = "${ALLOWED_SSH_CIDR}"
 allowed_http_cidr = "${ALLOWED_HTTP_CIDR}"
 EOF
 
-                        docker run --rm \
-                          -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
-                          -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
-                          -v "$WORKSPACE/terraform:/workspace" \
-                          -w /workspace \
-                          hashicorp/terraform:${TF_VERSION} \
-                          init
+                                docker run --rm \
+                                  -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+                                  -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
+                                  -v "$WORKSPACE/terraform:/workspace" \
+                                  -w /workspace \
+                                  hashicorp/terraform:${TF_VERSION} \
+                                  init
 
-                        docker run --rm \
-                          -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
-                          -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
-                          -v "$WORKSPACE/terraform:/workspace" \
-                          -w /workspace \
-                          hashicorp/terraform:${TF_VERSION} \
-                          apply -auto-approve
+                                docker run --rm \
+                                  -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+                                  -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
+                                  -v "$WORKSPACE/terraform:/workspace" \
+                                  -w /workspace \
+                                  hashicorp/terraform:${TF_VERSION} \
+                                  apply -auto-approve
 
-                        docker run --rm \
-                          -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
-                          -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
-                          -v "$WORKSPACE/terraform:/workspace" \
-                          -w /workspace \
-                          hashicorp/terraform:${TF_VERSION} \
-                          output -raw instance_public_ip > /tmp/ec2_ip.txt
-                    '''
+                                docker run --rm \
+                                  -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+                                  -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
+                                  -v "$WORKSPACE/terraform:/workspace" \
+                                  -w /workspace \
+                                  hashicorp/terraform:${TF_VERSION} \
+                                  output -raw instance_public_ip > /tmp/ec2_ip.txt
+                            '''
 
-                    script {
-                        def ec2Ip = readFile('/tmp/ec2_ip.txt').trim()
-                        if (!ec2Ip) {
-                            error('Terraform output instance_public_ip was empty')
+                            def ec2Ip = readFile('/tmp/ec2_ip.txt').trim()
+                            if (!ec2Ip) {
+                                error('Terraform output instance_public_ip was empty')
+                            }
+                            env.EC2_IP = ec2Ip
+                            echo "Terraform provisioned EC2_IP=${env.EC2_IP}"
                         }
-                        env.EC2_IP = ec2Ip
-                        echo "Terraform provisioned EC2_IP=${env.EC2_IP}"
+                    } catch (Exception e) {
+                        if (e.message.contains('Could not find credentials entry')) {
+                            echo "⚠️  AWS credentials not found. To set up AWS credentials in Jenkins:"
+                            echo "1. Go to Jenkins Dashboard → Manage Credentials → System → Global credentials"
+                            echo "2. Click 'Add Credentials'"
+                            echo "3. Select 'Username and password' credential type"
+                            echo "4. Username: Your AWS Access Key ID"
+                            echo "5. Password: Your AWS Secret Access Key"
+                            echo "6. ID: aws-credentials"
+                            echo "7. Click 'Create'"
+                            echo ""
+                            echo "Then re-run the pipeline."
+                            currentBuild.result = 'FAILURE'
+                            error("Missing AWS credentials: ${e.message}")
+                        } else {
+                            throw e
+                        }
                     }
                 }
             }
