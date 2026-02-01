@@ -1,0 +1,241 @@
+<mxfile host="app.diagrams.net" modified="2026-01-22T00:00:00.000Z" agent="5.0" etag="abc123" version="20.8.0" type="device">
+  <diagram name="CICD Pipeline" id="cicd-pipeline">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="CI/CD Pipeline Architecture" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="500" y="10" width="400" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== SOURCE CONTROL (GIT) ==================== -->
+        <mxCell id="git-label" value="SOURCE CONTROL" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=12;fontStyle=1;fontColor=#666" vertex="1" parent="1">
+          <mxGeometry x="30" y="70" width="150" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="developers" value="👨‍💻 Developers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#4CAF50;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="30" y="110" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="git" value="🔗 Git Repository\n(GitHub/GitLab)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9800;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="30" y="200" width="130" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Developers to Git -->
+        <mxCell id="arrow-dev-git" value="push/PR" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4CAF50;strokeWidth=2;fontSize=10" edge="1" parent="1" source="developers" target="git">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== CI/CD (JENKINS) ==================== -->
+        <mxCell id="jenkins-label" value="CONTINUOUS INTEGRATION" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=12;fontStyle=1;fontColor=#666" vertex="1" parent="1">
+          <mxGeometry x="210" y="70" width="200" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="jenkins" value="🔴 Jenkins CI/CD\nPipeline" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#E91E63;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="210" y="110" width="150" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Jenkins Pipeline Steps -->
+        <mxCell id="jenkins-steps" value="Steps:\n✓ SCM Checkout\n✓ Lint &amp; Test\n✓ Build\n✓ Docker Build" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#9C27B0;strokeWidth=1;fontSize=9" vertex="1" parent="1">
+          <mxGeometry x="210" y="210" width="150" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Git to Jenkins (webhook) -->
+        <mxCell id="arrow-git-jenkins" value="webhook/trigger" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FF9800;strokeWidth=2;dashed=1;fontSize=10" edge="1" parent="1" source="git" target="jenkins">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== CONTAINER REGISTRY ==================== -->
+        <mxCell id="registry-label" value="CONTAINER REGISTRY" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=12;fontStyle=1;fontColor=#666" vertex="1" parent="1">
+          <mxGeometry x="400" y="70" width="160" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="registry" value="🐳 Docker Registry\n(Docker Hub/ECR)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="400" y="110" width="150" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="registry-images" value="Images:\n• Frontend:v1.x\n• Backend:v1.x" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#1976D2;strokeWidth=1;fontSize=9" vertex="1" parent="1">
+          <mxGeometry x="400" y="210" width="150" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Jenkins to Registry -->
+        <mxCell id="arrow-jenkins-registry" value="docker push" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#E91E63;strokeWidth=2;fontSize=10" edge="1" parent="1" source="jenkins" target="registry">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== IaC (TERRAFORM &amp; ANSIBLE) ==================== -->
+        <mxCell id="iac-label" value="INFRASTRUCTURE AS CODE" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=12;fontStyle=1;fontColor=#666" vertex="1" parent="1">
+          <mxGeometry x="210" y="330" width="200" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="terraform" value="🔧 Terraform\nInfrastructure\nProvisioning" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1F8E9;strokeColor=#8BC34A;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="210" y="370" width="130" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ansible" value="⚙️ Ansible\nConfiguration\nManagement" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1F8E9;strokeColor=#8BC34A;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="370" y="370" width="130" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Jenkins to Terraform &amp; Ansible -->
+        <mxCell id="arrow-jenkins-terraform" value="apply" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#E91E63;strokeWidth=2;dashed=1;fontSize=10" edge="1" parent="1" source="jenkins" target="terraform">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-jenkins-ansible" value="run playbooks" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#E91E63;strokeWidth=2;dashed=1;fontSize=10" edge="1" parent="1" source="jenkins" target="ansible">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== KUBERNETES CLUSTER ==================== -->
+        <mxCell id="k8s-label" value="KUBERNETES CLUSTER (ORCHESTRATION)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=12;fontStyle=1;fontColor=#666" vertex="1" parent="1">
+          <mxGeometry x="600" y="70" width="280" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- K8s Cluster Container -->
+        <mxCell id="k8s-cluster" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#00BCD4;strokeWidth=3;dashed=0" vertex="1" parent="1">
+          <mxGeometry x="590" y="110" width="420" height="510" as="geometry" />
+        </mxCell>
+
+        <!-- Ingress/LB -->
+        <mxCell id="ingress" value="🔀 Ingress Controller\n(NGINX LB)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#B2EBF2;strokeColor=#00BCD4;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="610" y="130" width="130" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Frontend Deployment -->
+        <mxCell id="frontend-label" value="FRONTEND DEPLOYMENT" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=1;fontColor=#444" vertex="1" parent="1">
+          <mxGeometry x="610" y="220" width="130" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="frontend-svc" value="frontend-svc\nPort: 80" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#4CAF50;strokeWidth=1;fontSize=9" vertex="1" parent="1">
+          <mxGeometry x="610" y="245" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="frontend-pod1" value="🐳 frontend-pod-1\nReact/Vite:3000" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#A5D6A7;strokeColor=#388E3C;strokeWidth=1;fontSize=8" vertex="1" parent="1">
+          <mxGeometry x="610" y="310" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="frontend-pod2" value="🐳 frontend-pod-2\nReact/Vite:3000" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#A5D6A7;strokeColor=#388E3C;strokeWidth=1;fontSize=8" vertex="1" parent="1">
+          <mxGeometry x="610" y="370" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Backend Deployment -->
+        <mxCell id="backend-label" value="BACKEND DEPLOYMENT" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=10;fontStyle=1;fontColor=#444" vertex="1" parent="1">
+          <mxGeometry x="760" y="220" width="130" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="backend-svc" value="backend-svc\nPort: 8080" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCCBC;strokeColor=#D84315;strokeWidth=1;fontSize=9" vertex="1" parent="1">
+          <mxGeometry x="760" y="245" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="backend-pod1" value="🐳 backend-pod-1\nNode.js:8080" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFAB91;strokeColor=#BF360C;strokeWidth=1;fontSize=8" vertex="1" parent="1">
+          <mxGeometry x="760" y="310" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="backend-pod2" value="🐳 backend-pod-2\nNode.js:8080" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFAB91;strokeColor=#BF360C;strokeWidth=1;fontSize=8" vertex="1" parent="1">
+          <mxGeometry x="760" y="370" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ConfigMap &amp; Secrets -->
+        <mxCell id="config-secrets" value="⚙️ ConfigMap &amp; Secrets\nDB_HOST, API_KEY, etc." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8BBD0;strokeColor=#C2185B;strokeWidth=1;fontSize=8" vertex="1" parent="1">
+          <mxGeometry x="610" y="440" width="280" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- PVC (Persistent Volume) for logging/monitoring -->
+        <mxCell id="pvc" value="📊 Monitoring/Logging\n(Prometheus, ELK)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0BEE0;strokeColor=#7B1FA2;strokeWidth=1;fontSize=8" vertex="1" parent="1">
+          <mxGeometry x="610" y="510" width="280" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Connections within K8s -->
+        <mxCell id="arrow-ingress-frontend" value="HTTP:80" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4CAF50;strokeWidth=1;fontSize=8" edge="1" parent="1" source="ingress" target="frontend-svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-frontend-svc-pod1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4CAF50;strokeWidth=1;fontSize=8" edge="1" parent="1" source="frontend-svc" target="frontend-pod1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-frontend-svc-pod2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4CAF50;strokeWidth=1;fontSize=8" edge="1" parent="1" source="frontend-svc" target="frontend-pod2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-ingress-backend" value="HTTP:8080" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D84315;strokeWidth=1;fontSize=8" edge="1" parent="1" source="ingress" target="backend-svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-backend-svc-pod1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D84315;strokeWidth=1;fontSize=8" edge="1" parent="1" source="backend-svc" target="backend-pod1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-backend-svc-pod2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D84315;strokeWidth=1;fontSize=8" edge="1" parent="1" source="backend-svc" target="backend-pod2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Frontend to Backend communication -->
+        <mxCell id="arrow-frontend-backend" value="API Calls\nhttp://backend-svc:8080" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FF6F00;strokeWidth=2;fontSize=8" edge="1" parent="1" source="frontend-pod1" target="backend-svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Registry to K8s (image pull) -->
+        <mxCell id="arrow-registry-k8s" value="docker pull" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2196F3;strokeWidth=2;fontSize=10" edge="1" parent="1" source="registry" target="k8s-cluster">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Terraform/Ansible to K8s -->
+        <mxCell id="arrow-terraform-k8s" value="provision nodes/cluster" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#8BC34A;strokeWidth=2;dashed=1;fontSize=9" edge="1" parent="1" source="terraform" target="k8s-cluster">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-ansible-k8s" value="configure k8s" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#8BC34A;strokeWidth=2;dashed=1;fontSize=9" edge="1" parent="1" source="ansible" target="k8s-cluster">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== DATABASE ==================== -->
+        <mxCell id="db-label" value="DATA PERSISTENCE" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=12;fontStyle=1;fontColor=#666" vertex="1" parent="1">
+          <mxGeometry x="1050" y="70" width="150" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mongodb" value="🛢️ MongoDB Atlas\n(Managed Database)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE0B2;strokeColor=#F57C00;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="1050" y="110" width="150" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mongodb-details" value="Connection:\n• Host: cluster.mongodb.net\n• Port: 27017 (TLS)\n• Auth: K8s Secrets" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFD54F;strokeColor=#F57F17;strokeWidth=1;fontSize=8" vertex="1" parent="1">
+          <mxGeometry x="1050" y="210" width="150" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Backend to MongoDB -->
+        <mxCell id="arrow-backend-db" value="MongoDB\nPort 27017 (TLS)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#F57C00;strokeWidth=2;fontSize=8" edge="1" parent="1" source="backend-pod1" target="mongodb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== INTERNET/USERS ==================== -->
+        <mxCell id="users" value="👥 Users/Browsers\n(Internet)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#C62828;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="610" y="600" width="280" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Users to Ingress (Internet) -->
+        <mxCell id="arrow-users-ingress" value="HTTPS:443" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#C62828;strokeWidth=2;fontSize=10" edge="1" parent="1" source="users" target="ingress">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== LEGEND ==================== -->
+        <mxCell id="legend" value="LEGEND" style="text;html=1;align=left;verticalAlign=top;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=11;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="30" y="650" width="80" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-solid" value="━━ Solid Arrow = Runtime Data Flow" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=9" vertex="1" parent="1">
+          <mxGeometry x="30" y="675" width="220" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-dashed" value="╌╌ Dashed Arrow = CI/CD Control Flow &amp; Provisioning" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=9" vertex="1" parent="1">
+          <mxGeometry x="30" y="700" width="280" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-note" value="🔐 All external connectivity (MongoDB, Internet) uses TLS/HTTPS encryption" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=9;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="30" y="725" width="400" height="20" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
