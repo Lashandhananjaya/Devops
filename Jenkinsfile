@@ -77,7 +77,7 @@ pipeline {
                                                 exit 1
                                             fi
 
-                                            cat > infra/terraform.tfvars <<EOF
+                                            cat > terraform/terraform.tfvars <<EOF
 aws_region       = "${AWS_REGION}"
 key_pair_name    = "${KEY_PAIR_NAME}"
 ssh_public_key   = <<EOT
@@ -93,13 +93,13 @@ EOF
                 sh '''
                   set -e
                   docker run --rm \
-                    -v "$WORKSPACE/infra:/workspace" \
+                    -v "$WORKSPACE/terraform:/workspace" \
                     -w /workspace \
                     hashicorp/terraform:${TF_VERSION} \
                     init
 
                   docker run --rm \
-                    -v "$WORKSPACE/infra:/workspace" \
+                    -v "$WORKSPACE/terraform:/workspace" \
                     -w /workspace \
                     hashicorp/terraform:${TF_VERSION} \
                     apply -auto-approve
@@ -110,7 +110,7 @@ EOF
                         script: '''
                           set -e
                           docker run --rm \
-                            -v "$WORKSPACE/infra:/workspace" \
+                            -v "$WORKSPACE/terraform:/workspace" \
                             -w /workspace \
                             hashicorp/terraform:${TF_VERSION} \
                             output -raw instance_public_ip
