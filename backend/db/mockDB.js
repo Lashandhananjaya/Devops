@@ -33,7 +33,8 @@ export default {
     findOne: async (query) => {
       const db = readDB();
       if (query.email) {
-        return db.users.find((u) => u.email === query.email) || null;
+        const user = db.users.find((u) => u.email === query.email);
+        return user ? { ...user, toObject: () => user } : null;
       }
       return null;
     },
@@ -44,6 +45,7 @@ export default {
         _id: Date.now().toString(),
         ...userData,
         createdAt: new Date(),
+        toObject: () => ({ ...newUser }),
       };
       db.users.push(newUser);
       writeDB(db);
@@ -52,7 +54,10 @@ export default {
 
     find: async () => {
       const db = readDB();
-      return db.users;
+      return db.users.map((u) => ({
+        ...u,
+        toObject: () => u,
+      }));
     },
   },
 };
