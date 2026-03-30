@@ -1,8 +1,7 @@
 services:
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: lashan123/royal-stay-frontend:latest
+    pull_policy: always
     # map nginx (container 80) to host 5173 so it matches your dev frontend port
     ports:
       - "5173:80"
@@ -12,9 +11,8 @@ services:
       - app-network
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: lashan123/royal-stay-backend:latest
+    pull_policy: always
     ports:
       - "5000:5000"
     depends_on:
