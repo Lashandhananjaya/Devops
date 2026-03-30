@@ -11,10 +11,6 @@ pipeline {
         booleanParam(name: 'TERRAFORM_APPLY', defaultValue: false, description: 'If true, run Terraform apply (provision infrastructure). If false, deploy to existing EC2_IP')
     }
 
-    triggers {
-        githubPush()
-    }
-
     environment {
         DOCKER_REPO = "lashan123"
         TF_VERSION  = "1.7.5"
