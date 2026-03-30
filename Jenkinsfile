@@ -231,6 +231,7 @@ EOF
                           fi
 
                           echo "📤 Deploying to EC2: ${EC2_IP}"
+                          echo "🔐 Using SSH user from credential: ${SSH_USER}"
                           chmod 600 $EC2_KEY
 
                           # Copy deployment script
@@ -238,13 +239,13 @@ EOF
                               -o ConnectTimeout=30 \
                               -i $EC2_KEY \
                               scripts/deploy.sh \
-                              ${EC2_USER}@${EC2_IP}:/home/${EC2_USER}/deploy.sh
+                              ${SSH_USER}@${EC2_IP}:/home/${SSH_USER}/deploy.sh
 
                           # Execute deployment
                           ssh -o StrictHostKeyChecking=no \
                               -o ConnectTimeout=30 \
                               -i $EC2_KEY \
-                              ${EC2_USER}@${EC2_IP} \
+                              ${SSH_USER}@${EC2_IP} \
                               "chmod +x ~/deploy.sh && DOCKER_REPO=${DOCKER_REPO} ~/deploy.sh"
 
                           echo "✓ Deployment to EC2 completed successfully"
