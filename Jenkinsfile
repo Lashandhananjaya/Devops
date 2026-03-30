@@ -63,7 +63,7 @@ pipeline {
             steps {
                 sh '''
                   chmod +x scripts/build.sh
-                  ./scripts/build.sh
+                                    DOCKER_REPO=$DOCKER_REPO ./scripts/build.sh
                 '''
             }
         }
@@ -71,13 +71,13 @@ pipeline {
         stage('Push Docker Images') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
+                    credentialsId: 'dockerhub-credentials',
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
                     sh '''
                       chmod +x scripts/push.sh
-                      ./scripts/push.sh $DOCKER_USER $DOCKER_PASS
+                      DOCKER_REPO=$DOCKER_REPO ./scripts/push.sh $DOCKER_USER $DOCKER_PASS
                     '''
                 }
             }
