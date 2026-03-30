@@ -2,22 +2,61 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'AWS_REGION', defaultValue: 'us-east-1', description: 'AWS region for Terraform (infra/)')
-        string(name: 'KEY_PAIR_NAME', defaultValue: 'Royal_Stay_Hotels', description: 'AWS EC2 key pair name to create/use')
+        string(name: 'AWS_REGION', defaultValue: 'eu-north-1', description: 'AWS region for Terraform')
+        string(name: 'KEY_PAIR_NAME', defaultValue: 'royalstatebookingapp', description: 'AWS EC2 key pair name')
         text(name: 'SSH_PUBLIC_KEY', defaultValue: '', description: 'Optional: SSH public key material for EC2 access (e.g., contents of id_rsa.pub). If empty, Jenkins will derive it from the ec2-ssh-key private key.')
         string(name: 'ALLOWED_SSH_CIDR', defaultValue: '0.0.0.0/0', description: 'CIDR allowed for SSH (22)')
         string(name: 'ALLOWED_HTTP_CIDR', defaultValue: '0.0.0.0/0', description: 'CIDR allowed for app ports (8081, 3000)')
-        booleanParam(name: 'TERRAFORM_APPLY', defaultValue: true, description: 'If false, skip Terraform apply (deploy only)')
+        string(name: 'EC2_IP', defaultValue: '13.53.188.143', description: 'EC2 instance IP for deployment (leave blank to get from AWS)')
+        booleanParam(name: 'TERRAFORM_APPLY', defaultValue: false, description: 'If true, run Terraform apply (provision infrastructure). If false, deploy to existing EC2_IP')
+    }
+
+    triggers {
+        githubPush()
     }
 
     environment {
         DOCKER_REPO = "lashan123"
         TF_VERSION  = "1.7.5"
+        EC2_USER    = "ec2-user"
     }
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Get EC2 IP') {
+            when {
+                expression { return !params.TERRAFORM_APPLY }
+            }
+            steps {
+                script {
+                    if (params.EC2_IP && params.EC2_IP != '') {
+                        env.EC2_IP = params.EC2_IP
+                        echo "✓ Using provided EC2_IP: ${env.EC2_IP}"
+                    } else {
+                        withCredentials([
+                            usernamePassword(
+                                credentialsId: 'aws-credentials',
+                                usernameVariable: 'AWS_ACCESS_KEY_ID',
+                                passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                            )
+                        ]) {
+                            sh '''
+                                export AWS_DEFAULT_REGION="${AWS_REGION}"
+                                EC2_IP=$(aws ec2 describe-instances \
+                                  --filters "Name=instance-state-name,Values=running" \
+                                  --query 'Reservations[0].Instances[0].PublicIpAddress' \
+                                  --output text)
+                                echo "$EC2_IP" > /tmp/ec2_ip.txt
+                            '''
+                        }
+                        env.EC2_IP = readFile('/tmp/ec2_ip.txt').trim()
+                        echo "✓ Retrieved EC2_IP from AWS: ${env.EC2_IP}"
+                    }
+                }
+            }
+        }
+
+
             steps {
                 git branch: 'main',
                     url: 'https://github.com/Lashandhananjaya/Devops.git'
@@ -151,30 +190,42 @@ EOF
 
         stage('Deploy to EC2') {
             steps {
-                withCredentials([
-                    sshUserPrivateKey(
-                        credentialsId: 'ec2-ssh-key',
-                        keyFileVariable: 'EC2_KEY',
-                        usernameVariable: 'EC2_USER'
-                    )
-                ]) {
-                    sh '''
-                      set -e
-                      if [ -z "${EC2_IP}" ]; then
-                        echo "ERROR: EC2_IP is empty. Run Terraform stage (or set EC2_IP via environment)."
-                        exit 1
-                      fi
+                script {
+                    withCredentials([
+                        sshUserPrivateKey(
+                            credentialsId: 'ec2-ssh-key',
+                            keyFileVariable: 'EC2_KEY',
+                            usernameVariable: 'SSH_USER'
+                        )
+                    ]) {
+                        sh '''
+                          set -e
+                          
+                          if [ -z "${EC2_IP}" ]; then
+                            echo "ERROR: EC2_IP is empty. Set EC2_IP parameter or run Terraform stage."
+                            exit 1
+                          fi
 
-                      chmod 600 $EC2_KEY
+                          echo "📤 Deploying to EC2: ${EC2_IP}"
+                          chmod 600 $EC2_KEY
 
-                      scp -o StrictHostKeyChecking=no -i $EC2_KEY \
-                        scripts/deploy.sh \
-                        $EC2_USER@$EC2_IP:/home/$EC2_USER/deploy.sh
+                          # Copy deployment script
+                          scp -o StrictHostKeyChecking=no \
+                              -o ConnectTimeout=30 \
+                              -i $EC2_KEY \
+                              scripts/deploy.sh \
+                              ${EC2_USER}@${EC2_IP}:/home/${EC2_USER}/deploy.sh
 
-                      ssh -o StrictHostKeyChecking=no -i $EC2_KEY \
-                        $EC2_USER@$EC2_IP \
-                        "chmod +x ~/deploy.sh && DOCKER_REPO=$DOCKER_REPO ~/deploy.sh"
-                    '''
+                          # Execute deployment
+                          ssh -o StrictHostKeyChecking=no \
+                              -o ConnectTimeout=30 \
+                              -i $EC2_KEY \
+                              ${EC2_USER}@${EC2_IP} \
+                              "chmod +x ~/deploy.sh && DOCKER_REPO=${DOCKER_REPO} ~/deploy.sh"
+
+                          echo "✓ Deployment to EC2 completed successfully"
+                        '''
+                    }
                 }
             }
         }
@@ -182,10 +233,15 @@ EOF
 
     post {
         success {
-            echo "CI/CD pipeline completed successfully 🎉"
+            echo "✅ CI/CD pipeline completed successfully!"
+            echo "📍 Application deployed to: http://${EC2_IP}:3000"
+            echo "🔗 API available at: http://${EC2_IP}:8081"
         }
         failure {
-            echo "Pipeline failed ❌ Check Jenkins console output."
+            echo "❌ Pipeline failed. Check Jenkins console output for details."
+        }
+        always {
+            cleanWs()
         }
     }
 }

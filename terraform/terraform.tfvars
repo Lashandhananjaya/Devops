@@ -1,0 +1,8 @@
+aws_region     = "eu-north-1"
+key_pair_name  = "royalstatebookingapp"
+ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCR1/nQFg7jZBXjD7Ck4XaE1nTjEs0rfMBhF8LYvk/4IL1dlAybnr/QubJh0Ia2qgWvscIYtK3QAKql9nNd+ueqoH9rvSq04Lw0Q44SuGUrfliSfXXgMg5/qKZpV4NKsfsHGJ2UOvK6ibQOV1nzk2ELM39/J54s+YtS5gq2avp52DRvs+mau6ouiYGzOwXzL4eqzKqs/olZeFEzyQPUElN7h2pXxNAL9GYelmu+uHhccUhO75UNhA3fsB+oeellhW05mH6kFWLM4nJCVUK8TBaEViRuPyzykipkm9rBYq4faAurUY7ySW5XoKzAAq5OQCl9bUtnWItlGKX1hgyCe2n77Y7NodT+WMnMSa8+Z9zrDJiygJZNfTZZ7r1DWqVa4JTSCbzImtL+ROGbWGdZSoAsTTrSdm1uq6obOIh2un3v4SSScqJYOc1Xx47CJYZIUCo0eejMwxKD2ehsdHe4HVPwjSsd4vKD7TMjaV4pBQ5+aWKjv6lrTip5e3n8A0jCi5PUfNfe4BhjnrXtzQUgZrBUTF3LqR+KlWQGFQji8tOIQBhQg3zSKQj0qFtD9y6554rVco7vTN3qOvQ01nGkWqaVYii1eCoh1g/cA3dPt9kMukBwwdqXL7fs3wBYFIQQDmOgLiU3PXkQ3VntCW3NIvV3VtJXXTw2EQ36C05cSvwlBw== dhana@DESKTOP-4MPUECF"
+docker_user    = "lashan123"
+
+# Optional: Adjust security groups if needed
+allowed_ssh_cidr  = "0.0.0.0/0"   # Restrict this to your IP for production
+allowed_http_cidr = "0.0.0.0/0"

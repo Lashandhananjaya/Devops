@@ -1,0 +1,89 @@
+# 🚀 Quick Reference Card
+
+## Get Your AWS Keys (2 minutes)
+
+```
+1. Go: https://console.aws.amazon.com/
+2. Click: Account Name → Security Credentials
+3. Click: Create Access Key
+4. Copy: Access Key ID (AKIA...)
+5. Copy: Secret Access Key (only visible once!)
+```
+
+---
+
+## Create 3 Files (3 minutes)
+
+### File 1: `C:\Users\ASUS\.aws\credentials`
+```
+[default]
+aws_access_key_id = PASTE_ACCESS_KEY_HERE
+aws_secret_access_key = PASTE_SECRET_KEY_HERE
+```
+
+### File 2: `C:\Users\ASUS\.aws\config`
+```
+[default]
+region = eu-north-1
+output = json
+```
+
+### File 3: `terraform/terraform.tfvars`
+```hcl
+aws_region    = "eu-north-1"
+key_pair_name = "your-ec2-key-pair-name"
+ssh_public_key = "ssh-rsa AAAAB3..."
+docker_user   = "lashan123"
+```
+
+---
+
+## Run Terraform (5 minutes)
+
+```powershell
+# Navigate to Terraform directory
+cd terraform
+
+# Check what will be created
+terraform plan
+
+# Create the infrastructure
+terraform apply
+
+# Get the IP address of created instance
+terraform output
+```
+
+---
+
+## Done! ✅
+
+Your infrastructure in AWS will be ready in ~20 minutes.
+
+---
+
+## Alternative: Use Environment Variables
+
+```powershell
+# Instead of creating .aws/credentials file
+$env:AWS_ACCESS_KEY_ID = "AKIA..."
+$env:AWS_SECRET_ACCESS_KEY = "..."
+$env:AWS_DEFAULT_REGION = "eu-north-1"
+
+# Then run terraform
+terraform plan
+```
+
+---
+
+## ⚠️ Remember
+
+✅ Save AWS keys securely
+✅ Don't commit .aws/credentials to Git
+✅ terraform.tfvars is in .gitignore
+✅ Review terraform plan before apply
+❌ Don't lose your private key (.pem file)
+
+---
+
+**That's it! 3 files + 3 commands = Infrastructure ready!**

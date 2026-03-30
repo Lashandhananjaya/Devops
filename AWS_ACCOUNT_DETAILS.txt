@@ -1,0 +1,81 @@
+# AWS Account Details - Please Fill This In
+
+Before I update all the project files, please provide your AWS account information:
+
+## 📋 Required Information
+
+### AWS Account Details
+```
+AWS Account ID:          [Get from: AWS Console → Account dropdown → Account ID]
+Your AWS Account ID:     ________________________________________
+
+AWS Access Key ID:       [Get from: AWS Console → IAM → Users → Security Credentials]
+Your Access Key ID:      AKIA____________________________________
+
+AWS Secret Access Key:   [Get from: Same place, only visible once when created]
+Your Secret Key:         ________________________________________
+
+EC2 Key Pair Name:       [Get from: AWS Console → EC2 → Key Pairs]
+Your Key Pair Name:      ________________________________________
+
+EC2 SSH Username:        [Usually: ec2-user for Amazon Linux, ubuntu for Ubuntu]
+Your Username:           ________________________________________
+```
+
+### Application Configuration
+```
+MongoDB Connection (choose one):
+
+Option A - MongoDB Atlas (Cloud):
+MongoDB Atlas URI:       mongodb+srv://username:password@cluster.mongodb.net/royal-stay-hotels?retryWrites=true&w=majority
+Your URI:                ________________________________________
+
+Option B - Local MongoDB on EC2:
+Your URI:                mongodb://admin:password@13.53.188.143:27017/royal-stay-hotels?authSource=admin
+
+Docker Hub Username:     [Your Docker Hub username, e.g., lashan123]
+Your Username:           ________________________________________
+```
+
+### Instance Information
+```
+App Instance IP:         13.53.188.143 ✓ (Already confirmed)
+AWS Region:              eu-north-1 ✓ (Already confirmed)
+```
+
+---
+
+## ✅ Checklist Before Starting
+
+- [ ] I have my AWS Account ID
+- [ ] I have AWS Access Key ID (starts with AKIA)
+- [ ] I have AWS Secret Access Key saved
+- [ ] I have EC2 Key Pair Name
+- [ ] I know my EC2 SSH username (ec2-user or ubuntu)
+- [ ] I have MongoDB URI (either Atlas or local)
+- [ ] I have Docker Hub username
+
+---
+
+## 📝 Example (DO NOT USE - FOR REFERENCE ONLY)
+
+```
+AWS Account ID:          123456789012
+AWS Access Key ID:       AKIAIOSFODNN7EXAMPLE
+AWS Secret Access Key:   wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+EC2 Key Pair Name:       royal-stay-key
+EC2 SSH Username:        ec2-user
+MongoDB URI:             mongodb+srv://admin:password@cluster.mongodb.net/royal-stay-hotels
+Docker Hub Username:     lashan123
+```
+
+---
+
+Once you provide these details, I'll:
+1. ✅ Update all 13 files with your values
+2. ✅ Create environment files
+3. ✅ Commit changes to git
+4. ✅ Verify all configurations
+
+**Please copy this section and fill in your actual values:**
+
