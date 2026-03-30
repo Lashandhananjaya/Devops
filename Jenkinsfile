@@ -234,12 +234,26 @@ EOF
                           echo "🔐 Using SSH user from credential: ${SSH_USER}"
                           chmod 600 $EC2_KEY
 
+                          # Ensure app directory exists on target host
+                          ssh -o StrictHostKeyChecking=no \
+                              -o ConnectTimeout=30 \
+                              -i $EC2_KEY \
+                              ${SSH_USER}@${EC2_IP} \
+                              "mkdir -p /home/${SSH_USER}/app"
+
                           # Copy deployment script
                           scp -o StrictHostKeyChecking=no \
                               -o ConnectTimeout=30 \
                               -i $EC2_KEY \
                               scripts/deploy.sh \
                               ${SSH_USER}@${EC2_IP}:/home/${SSH_USER}/deploy.sh
+
+                          # Copy compose file
+                          scp -o StrictHostKeyChecking=no \
+                              -o ConnectTimeout=30 \
+                              -i $EC2_KEY \
+                              docker-compose.yml \
+                              ${SSH_USER}@${EC2_IP}:/home/${SSH_USER}/app/docker-compose.yml
 
                           # Execute deployment
                           ssh -o StrictHostKeyChecking=no \
