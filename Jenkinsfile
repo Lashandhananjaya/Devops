@@ -8,6 +8,7 @@ pipeline {
         string(name: 'ALLOWED_SSH_CIDR', defaultValue: '0.0.0.0/0', description: 'CIDR allowed for SSH (22)')
         string(name: 'ALLOWED_HTTP_CIDR', defaultValue: '0.0.0.0/0', description: 'CIDR allowed for app ports (8081, 3000)')
         string(name: 'EC2_IP', defaultValue: '13.53.188.143', description: 'EC2 instance IP for deployment (leave blank to get from AWS)')
+        string(name: 'DOCKERHUB_CREDENTIALS_ID', defaultValue: 'dockerhub-credentials', description: 'Jenkins credentials ID for Docker Hub username/password')
         booleanParam(name: 'TERRAFORM_APPLY', defaultValue: false, description: 'If true, run Terraform apply (provision infrastructure). If false, deploy to existing EC2_IP')
     }
 
@@ -70,15 +71,42 @@ pipeline {
 
         stage('Push Docker Images') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-credentials',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    sh '''
-                      chmod +x scripts/push.sh
-                      DOCKER_REPO=$DOCKER_REPO ./scripts/push.sh $DOCKER_USER $DOCKER_PASS
-                    '''
+                script {
+                    def credentialIdsToTry = [params.DOCKERHUB_CREDENTIALS_ID, 'dockerhub-credentials', 'dockerhub-creds']
+                        .findAll { it?.trim() }
+                        .unique()
+
+                    def pushed = false
+                    def lastError = null
+
+                    for (def credId : credentialIdsToTry) {
+                        try {
+                            withCredentials([usernamePassword(
+                                credentialsId: credId,
+                                usernameVariable: 'DOCKER_USER',
+                                passwordVariable: 'DOCKER_PASS'
+                            )]) {
+                                sh '''
+                                  chmod +x scripts/push.sh
+                                  DOCKER_REPO=$DOCKER_REPO ./scripts/push.sh $DOCKER_USER $DOCKER_PASS
+                                '''
+                            }
+                            echo "Docker push succeeded using credentialsId='${credId}'"
+                            pushed = true
+                            break
+                        } catch (Exception e) {
+                            lastError = e
+                            if (e.message?.contains('Could not find credentials entry')) {
+                                echo "Credentials ID '${credId}' not found. Trying next option..."
+                            } else {
+                                throw e
+                            }
+                        }
+                    }
+
+                    if (!pushed) {
+                        error("Docker Hub credentials not found. Create a Jenkins Username/Password credential and set ID to one of: ${credentialIdsToTry.join(', ')}")
+                    }
                 }
             }
         }
