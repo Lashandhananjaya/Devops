@@ -11,8 +11,26 @@ dotenv.config();
 const app = express();
 
 // Middleware
+// Allow CORS from frontend running on any port on the same host
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:80"],
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Get the host from the incoming request
+    const requestHost = origin.split('://')[1]?.split(':')[0];
+    
+    // Allow all ports on localhost and the same host
+    if (
+      origin.includes('localhost') ||
+      origin.includes('127.0.0.1') ||
+      origin.includes(requestHost)
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json()); // Parse JSON requests
