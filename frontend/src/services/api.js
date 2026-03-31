@@ -1,4 +1,5 @@
-const API_BASE_URL = "http://localhost:5000/api";
+// Use current host for API calls (works on localhost:3000 and EC2:5173)
+const API_BASE_URL = `http://${window.location.hostname}:5000/api`;
 
 export const register = async (name, email, password) => {
   try {
