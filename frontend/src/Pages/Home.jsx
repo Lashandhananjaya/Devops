@@ -88,7 +88,7 @@ export default function Home() {
       <section className="pt-28 pb-20 bg-[url('https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1350&q=80')] bg-cover bg-center bg-fixed text-center">
         <div className="bg-black/40 w-full h-full py-32 flex flex-col items-center justify-center">
           <h1 className="text-white text-5xl md:text-6xl font-bold mb-6 drop-shadow-lg">
-            Lashan's Perfect Stay Awaits
+            Your Perfect Stay Awaits
           </h1>
           <p className="text-white text-lg md:text-xl mb-8 max-w-xl">
             Book a room that suits your comfort and enjoy an unforgettable experience.
